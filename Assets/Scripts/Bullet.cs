@@ -6,7 +6,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public GameObject targetEnemy;
-    private float bulletSpeed = 2f;
+    public float bulletSpeed = 2f;
     private float currentEnemyDistanceToPlayer;
     private bool hasTarget;
 

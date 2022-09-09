@@ -12,7 +12,6 @@ public class RewardManager : MonoBehaviour
      3, gain/upgrade item2 - increase max HP
      4, upgrade normal attack - attack rate/number
      */
-    public List<int> rewardIndexPool = new List<int>();
     public List<int> chosenRewardPool = new List<int>();
 
     public static RewardManager instance;
@@ -44,7 +43,7 @@ public class RewardManager : MonoBehaviour
             switch (ChosenReward)  
             {                                                  
                 case 0:
-                    UIManager.instance.rewardSlotTexts[currentIndex].text = "Restore Health";
+                    UIManager.instance.rewardSlotTexts[currentIndex].text = "Restore 20% Max Health";
                     break;                                     
                 case 1:
                     UIManager.instance.rewardSlotTexts[currentIndex].text = "Gain/Upgrade AOE Damage Ability";    
@@ -62,17 +61,26 @@ public class RewardManager : MonoBehaviour
     
     public void ChooseReward(int chosenRewardsPoolIndex)
     {
-        RandomRewardsOutOfTwo();
+        //RandomRewardsOutOfTwo();
+        Debug.Log("chosenRewardsPoolIndex:" + chosenRewardsPoolIndex);   
         switch (chosenRewardPool[chosenRewardsPoolIndex])
         {
             case 0:
+                PlayerController.instance.currentHealth += Mathf.FloorToInt(0.2f * PlayerController.instance.maxHealth);
+                if (PlayerController.instance.currentHealth >= PlayerController.instance.maxHealth)
+                {
+                    PlayerController.instance.currentHealth = PlayerController.instance.maxHealth;
+                }
                 break;
             case 1:
                 PlayerController.instance.killZone.SetActive(true);
                 break;
             case 2:
+                PlayerController.instance.maxHealth += Mathf.FloorToInt(0.2f * PlayerController.instance.maxHealth);
                 break;
             case 3:
+                PlayerController.instance.attackRate *= 0.8f;
+                PlayerController.instance.bulletSpeedModifier += 0.5f;
                 break;
         }
         UIManager.instance.levelUpPanel.SetActive(false);

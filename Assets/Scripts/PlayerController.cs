@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -22,11 +23,16 @@ public class PlayerController : MonoBehaviour
     public Transform bottomRightCorner;
 
     public GameObject killZone;
+    public float bulletSpeedModifier = 0;
+
+    public int currentHealth;
+    public int maxHealth;
+    public float attackRate = 1;
 
     private void Awake()
     {
         instance = this;
-        InvokeRepeating("NormalAttack",1,1);
+        InvokeRepeating("NormalAttack",1,attackRate);
     }
 
     private void Start()
@@ -38,6 +44,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         processInput();
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(0);
+        }
     }
 
     private void FixedUpdate()
@@ -61,6 +71,7 @@ public class PlayerController : MonoBehaviour
     void NormalAttack()
     {
         GameObject go = Instantiate(Resources.Load("Prefabs/Bullet"),gameObject.transform.position,Quaternion.identity) as GameObject;
+        go.GetComponent<Bullet>().bulletSpeed += bulletSpeedModifier;
     }
 
     public void GainExperience()
@@ -83,5 +94,20 @@ public class PlayerController : MonoBehaviour
         currentExperience = 0;
         level += 1;
         RewardManager.instance.LevelUp();
+    }
+    
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.CompareTag("Enemy"))
+        {
+            Destroy(col.gameObject);
+            currentHealth -= 10;
+            if (currentHealth <= 0)
+            {
+                Debug.Log("gg");
+                UIManager.instance.GGPanel.SetActive(true);
+                CancelInvoke();
+            }
+        }
     }
 }
